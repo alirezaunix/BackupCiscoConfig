@@ -1,0 +1,27 @@
+#!/bin/bash
+echo -n "Enter IP Filename: "
+read SourceIP
+echo -n "Enter Global Username: "
+read username
+echo -n "Enter Global Password: "
+read password
+echo -n "Enter TFTP Server Name/IP: "
+read tftp
+br=$( echo -ne '\n')
+num=$(wc -l < $SourceIP)
+i=0
+while [ $i -lt $num ]; do
+  let i=i+1
+  ip=$(head -$i $SourceIP | tail -1)
+  echo $ip
+cat << EOF > out.conf
+  sshpass -p $password ssh -o StrictHostKeyChecking=no -o KexAlgorithms=+diffie-hellman-group1-sha1  $username@$ip << EOC
+  copy running-config tftp:
+  $tftp
+  $ip
+  exit
+  EOC
+EOF
+  chmod +x out.conf
+  ./out.conf
+done

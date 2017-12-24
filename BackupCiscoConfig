@@ -8,6 +8,7 @@ read password
 echo -n "Enter TFTP Server Name/IP: "
 read tftp
 br=$( echo -ne '\n')
+d=$(printf '%(%Y-%m-%d)T\n' -1)
 num=$(wc -l < $SourceIP)
 i=0
 while [ $i -lt $num ]; do
@@ -18,7 +19,7 @@ cat << EOF > out.conf
   sshpass -p $password ssh -o StrictHostKeyChecking=no -o KexAlgorithms=+diffie-hellman-group1-sha1  $username@$ip << EOC
   copy running-config tftp:
   $tftp
-  $ip
+  $ip-$d
   exit
   EOC
 EOF
